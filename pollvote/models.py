@@ -124,9 +124,3 @@ class PollVote(models.Model):
     
     def __str__(self):
         return f'{self.user.name} poll his vote to {self.candidate}'
-    
-    @staticmethod
-    def countVotes(candidate):
-        candiateVotes = Candidates.objects.filter(id = candidate)
-        print(candiateVotes.total_votes)
-        
