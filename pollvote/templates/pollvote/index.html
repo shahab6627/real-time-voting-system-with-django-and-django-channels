@@ -1,0 +1,33 @@
+{% extends 'pollvote/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <h3>All Election Competitions 2023</h3>
+        {% for competition in competitions %}
+        <div class="card col mt-3 col-md-3" >
+            <div class="row">
+                <div class="col-md-5">
+                    <img src="/media/{{competition.candidate_a.image}}" style="height:60px" class="card-img-top mt-2" alt="...">
+                     
+                </div>  
+                <div class="col-md-2 mt-4"><span class="text-danger">VS </span> </div>
+                
+                <div class="col-md-5">
+                    <img src="/media/{{competition.candidate_b.image}}" style="height:60px" class="card-img-top mt-2" alt="...">
+                </div>
+            </div>
+            
+            <div class="card-body">
+             <div class="row text-center"> <h6 class="card-title col-md-12">{{competition.candidate_a}}</h6> </div>
+              <div class="row text-center text-danger"><h5>VS </h5></div>
+              <div class="row text-center"><h6 class="card-title col-md-12">{{competition.candidate_b}}</h6> </div>
+              <p class="card-text text-center">For Live Updates click on bellow button</p>
+              <div class="text-center"><a href="{{competition.get_absolute_url}}" class="btn btn-primary text-center">Live Updates</a></div>
+            </div>
+          </div>
+          <div class="col-md-1"></div>
+          {% endfor %}
+    </div>
+</div>
+{% endblock %}

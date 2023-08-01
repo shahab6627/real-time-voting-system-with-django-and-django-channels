@@ -1,0 +1,108 @@
+{% extends 'pollvote/base.html' %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    {% for election_status in comp %}
+    <h2>Live Updates For {{election_status.region}}</h2>
+    <ol class="list-group list-group-numbered">
+      <li class="list-group-item d-flex justify-content-between align-items-start">
+        <div class="ms-2 me-auto">
+          <div class="fw-bold">{{election_status.candidate_a.candidate_name}}</div>
+          Region {{election_status.region}}
+        </div>
+        <span class="badge bg-primary rounded-pill" id="user-{{election_status.candidate_a.id}}">{{election_status.candidate_a.total_votes}}</span>
+      </li>
+      <li class="list-group-item d-flex justify-content-between align-items-start">
+        <div class="ms-2 me-auto">
+          <div class="fw-bold">{{election_status.candidate_b.candidate_name}}</div>
+          Region {{election_status.region}}
+        </div>
+        <span class="badge bg-primary rounded-pill" id="user-{{election_status.candidate_b.id}}">{{election_status.candidate_b.total_votes}}</span>
+      </li>
+    </ol>
+    {{election_status.slug | json_script:"slug"}}
+    
+
+    {%endfor%}
+
+    <div id="vote_form">
+      {% if request.user.vote_status == 'unpolled' %}
+      <h2 class="mt-2">Poll Your Vote To Your Favourite</h2>
+      <form action="" method="post" class="mt" id="">
+        {%csrf_token%}
+        <select class="form-select" aria-label="Default select example" id="pole_vote" name="poll_vote">
+          <option value="">-- select your candidate --</option>
+          {% for election_status in comp %}
+          
+          <option value="{{election_status.candidate_a.id}}">{{election_status.candidate_a.candidate_name}}</option>
+          <option value="{{election_status.candidate_b.id}}">{{election_status.candidate_b.candidate_name}}</option>
+
+          {%endfor%}
+        </select>
+        <div >
+        </div>
+
+      </form>
+      <input type="button" id="submit-btn1" value="poll your vote" class="btn btn sm btn-primary mt-3">
+      
+
+      {%endif%}
+      <input type="hidden" id="submit-btn1" value="poll your vote" class="btn btn sm btn-primary mt-3">
+      
+      {% if my_vote %}
+        <div class="mt-4"><h4>You Poll Your vote to</h4>
+          {{my_vote.candidate}}
+        </div>
+        {% for message in messages %}
+        <div class="alert mt-3 alert-warning alert-dismissible fade show" role="alert">
+          {{message}}
+          <button type="button"  class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+          
+      {%endif%}
+    </div>
+  </div>
+</div>
+
+
+<script>
+  var slug = JSON.parse(document.getElementById('slug').textContent)
+  var user = '{{user}}'
+  
+  var ws = new WebSocket(`ws://127.0.0.1:8000/ws/pollvote/${slug}`)
+
+  ws.onopen = function(){
+    console.log("connection open")
+  }
+
+  document.getElementById('submit-btn1').onclick = function(e){
+    var id = document.getElementById('pole_vote').value
+    
+    
+    ws.send(JSON.stringify({'candidate_id':id, 'user':user}))
+
+    ws.onmessage = function(e){
+      userdata = JSON.parse(e.data)
+      user_id = userdata['user_id']
+      votes = userdata['votes']
+      candidate_name = userdata['candidate']
+  
+      console.log(user_id , votes)
+  
+      document.getElementById('user-'+user_id).innerHTML = `${votes}`
+       
+      document.getElementById('vote_form').innerHTML = ''
+      document.getElementById('vote_form').innerHTML = `your vote is polled to ${candidate_name}`
+
+    }
+    ws.onclose = function(){
+      console.log("connection is closed")
+    }
+  }
+  
+
+</script>
+{% endblock %}
+

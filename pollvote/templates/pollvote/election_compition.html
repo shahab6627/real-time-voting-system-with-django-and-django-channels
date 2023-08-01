@@ -1,0 +1,64 @@
+{% extends 'pollvote/base.html' %}
+
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+             
+            <h2>Live Updates For {{election_sts.region}}</h2>
+            <ol class="list-group list-group-numbered">
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                  <div class="ms-2 me-auto">
+                    <div class="fw-bold">{{election_sts.candidate_a.candidate_name}}</div>
+                    Region {{election_sts.region}}
+                  </div>
+                  <span class="badge bg-primary rounded-pill" id="user-{{election_sts.candidate_a.id}}">{{election_sts.candidate_a.total_votes}}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                      <div class="fw-bold">{{election_sts.candidate_b.candidate_name}}</div>
+                      Region {{election_sts.region}}
+                    </div>
+                    <span class="badge bg-primary rounded-pill" id="user-{{election_sts.candidate_b.id}}">{{election_sts.candidate_b.total_votes}}</span>
+                  </li>
+              </ol>
+              {{election_sts.slug | json_script:"slug"}}
+               
+              {%if leading_votes %}
+               <div class="alert alert-success mt-4"> {{leading_votes}}</div>
+              {%endif%}
+        </div>
+        
+        <div>
+             
+          
+              
+
+        </div>
+    </div>
+    <script>
+      var slug = JSON.parse(document.getElementById('slug').textContent)
+      
+      var ws = new WebSocket(`ws://127.0.0.1:8000/ws/pollvote/${slug}`)
+    
+      ws.onopen = function(){
+        console.log("connection open")
+      }
+      
+        ws.onmessage = function(e){
+          console.log(e)
+          userdata = JSON.parse(e.data)
+          user_id = userdata['user_id']
+          votes = userdata['votes']
+      
+          console.log(user_id , votes)
+      
+          document.getElementById('user-'+user_id).innerHTML = `${votes}`
+        }
+        ws.onclose = function(){
+          console.log("connection is closed")
+        }
+    </script>
+
+{% endblock content %}
+    

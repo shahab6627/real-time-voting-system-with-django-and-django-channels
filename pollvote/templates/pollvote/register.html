@@ -1,0 +1,57 @@
+{% extends 'pollvote/base.html' %}
+{% block content %}
+<div class="container">
+    <div class="row">
+
+        <h2>Register And Poll Your Vote</h2>
+        <form action="" method="post">
+            {%csrf_token%}
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" name="email" id="email" placeholder="Email">
+          </div>
+          <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" name="name" id="name" placeholder="enter name">
+          </div>
+          <div class="mb-3">
+            <label for="formGroupExampleInput2" class="form-label">Region</label>
+            <select type="text" class="form-control" name="region" id="region" placeholder="Another input placeholder">
+                {%for region in regions %}
+                <option value="{{region.id}}">{{region.region_name}}</option>
+                    {%endfor%}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="passsword" class="form-label">Password</label>
+            <input type="password" class="form-control" name="password" id="password" placeholder="******">
+          </div>
+
+          <div class="mb-3">
+            <label for="c_passowrd" class="form-label">confirm Password</label>
+            <input type="password" class="form-control" name="c_password" id="c_password" placeholder="******">
+          </div>
+          <div class="mb-3">
+             
+            <input type="submit" class="btn btn-primary btn-sm" value="Register">
+          </div>
+          <div>
+            {% if messages %}
+
+             
+                {% for message in messages %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    {{message}}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+                {% endfor %}
+          
+
+            {% endif %}
+          </div>
+
+</form>
+
+    </div>
+</div>
+{% endblock %}
